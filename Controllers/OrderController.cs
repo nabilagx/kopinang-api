@@ -17,6 +17,19 @@ namespace kopinang_api.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
+        {
+            var orders = await _context.orders
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(d => d.Produk)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+
+
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder(Order order)
         {
@@ -42,5 +55,82 @@ namespace kopinang_api.Controllers
 
             return order;
         }
+        [HttpGet("user/{uid}")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByUserId(string uid)
+        {
+            var orders = await _context.orders
+                .Where(o => o.UserId == uid)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Produk)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            if (orders == null || !orders.Any())
+            {
+                return NotFound();
+            }
+
+            return orders;
+        }
+        [HttpPut("{id}/qrcode")]
+        public async Task<IActionResult> UpdateQrCode(int id, [FromBody] dynamic data)
+        {
+            var order = await _context.orders.FindAsync(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                string qrCode = data.qrCode; // Pastikan penulisan sama: qrCode
+                order.QrCode = qrCode;
+                order.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.ToString());
+            }
+        }
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] string newStatus)
+        {
+            var order = await _context.orders.FindAsync(id);
+            if (order == null)
+                return NotFound(new { message = "Pesanan tidak ditemukan" });
+
+            if (order.Status.ToLower() == "selesai")
+                return BadRequest(new { message = "Pesanan sudah selesai dan tidak bisa diubah" });
+
+            order.Status = newStatus;
+            order.UpdatedAt = DateTime.UtcNow;
+
+
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Status pesanan diperbarui" });
+        }
+        [HttpPut("{id}/verifikasi")]
+        public async Task<IActionResult> VerifikasiPesanan(int id)
+        {
+            var order = await _context.orders.FindAsync(id);
+            if (order == null)
+                return NotFound(new { message = "Pesanan tidak ditemukan" });
+
+            if (order.Status.ToLower() == "selesai")
+                return BadRequest(new { message = "Pesanan sudah selesai dan tidak bisa diverifikasi lagi" });
+
+            order.Status = "Selesai";  // langsung paksa selesai
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Pesanan berhasil diverifikasi dan status diubah jadi Selesai" });
+        }
+
+
+
     }
 }
