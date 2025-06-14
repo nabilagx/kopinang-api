@@ -3,3 +3,4 @@ bin/
 obj/
 *.user
 *.http
+Configs/firebase-service-account.json
