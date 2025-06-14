@@ -21,10 +21,18 @@ namespace kopinang_api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produk>>> GetProduk()
-        {
-            return await _context.produk.ToListAsync();
-        }
+         public async Task<ActionResult<IEnumerable<Produk>>> GetProduk()
+         {
+             try
+             {
+                 return await _context.produk.ToListAsync();
+             }
+             catch (Exception ex)
+             {
+                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
+             }
+         }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Produk>> GetProduk(int id)
