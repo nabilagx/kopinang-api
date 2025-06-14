@@ -76,11 +76,16 @@ var app = builder.Build();
 // Middleware
 app.UseCors("AllowAll");
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "kopinang-api v1");
+        c.RoutePrefix = "swagger";
+    });
 }
+
 
 app.UseHttpsRedirection();
 
