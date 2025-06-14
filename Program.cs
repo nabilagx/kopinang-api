@@ -52,6 +52,7 @@ builder.Services.AddControllers()
 //     options.UseNpgsql(builder.Configuration.GetConnectionString("DATABASE_URL")));
 
 // Parsing DATABASE_URL
+
 var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (string.IsNullOrEmpty(dbUrl))
     throw new Exception("DATABASE_URL environment variable is not set!");
@@ -65,7 +66,7 @@ var connStr = new Npgsql.NpgsqlConnectionStringBuilder
     Username = userInfo[0],
     Password = userInfo[1],
     Database = uri.AbsolutePath.TrimStart('/'),
-    SslMode = Npgsql.SslMode.Prefer,
+    SslMode = Npgsql.SslMode.Require,
     TrustServerCertificate = true
 }.ToString();
 
