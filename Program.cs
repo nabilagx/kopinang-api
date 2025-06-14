@@ -52,7 +52,7 @@ builder.Services.AddControllers()
 //     options.UseNpgsql(builder.Configuration.GetConnectionString("DATABASE_URL")));
 
 // Parsing DATABASE_URL
-
+// Parsing DATABASE_URL
 var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (string.IsNullOrEmpty(dbUrl))
     throw new Exception("DATABASE_URL environment variable is not set!");
@@ -69,6 +69,9 @@ var connStr = new Npgsql.NpgsqlConnectionStringBuilder
     SslMode = Npgsql.SslMode.Require,
     TrustServerCertificate = true
 }.ToString();
+
+Console.WriteLine("🟢 PostgreSQL connection string:");
+Console.WriteLine(connStr);
 
 // Gunakan koneksi ke PostgreSQL dari DATABASE_URL
 builder.Services.AddDbContext<kopinang_api.Data.DBContext>(options =>
