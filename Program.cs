@@ -16,11 +16,15 @@ if (string.IsNullOrEmpty(base64))
     throw new Exception("FIREBASE_CREDENTIAL_B64 is not set in environment variables.");
 }
 
-var json = Encoding.UTF8.GetString(Convert.FromBase64String(base64));
 FirebaseApp.Create(new AppOptions
 {
-    Credential = GoogleCredential.FromJson(json)
+    Credential = GoogleCredential.FromJson(
+        Encoding.UTF8.GetString(Convert.FromBase64String(
+            Environment.GetEnvironmentVariable("FIREBASE_CREDENTIAL_B64")
+        ))
+    )
 });
+
 
 
 // Tambahkan JWT Authentication
