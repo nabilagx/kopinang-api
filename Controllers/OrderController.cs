@@ -148,7 +148,7 @@ namespace kopinang_api.Controllers
             }
 
             var client = new HttpClient();
-            var serverKey = Environment.GetEnvironmentVariable("MIDTRANS_SERVER_KEY")
+            var serverKey = Environment.GetEnvironmentVariable("MIDTRANS_SERVER_KEY") 
                 ?? "fallback-key-untuk-dev-opsional";
 
             var base64Auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(serverKey + ":"));

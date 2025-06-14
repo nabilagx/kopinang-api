@@ -1,4 +1,6 @@
 ﻿using Google.Cloud.Firestore;
+using Google.Apis.Auth.OAuth2;
+using System.Text;
 
 namespace kopinang_api.Services
 {
@@ -8,13 +10,23 @@ namespace kopinang_api.Services
 
         public FirestoreService(IConfiguration configuration)
         {
-            // Set environment variable for credentials
-            string credentialPath = Path.Combine(AppContext.BaseDirectory, "kopinang-460316-71bf05d4e71e.json");
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credentialPath);
+            // Ambil dari env var FIREBASE_CREDENTIAL_B64
+            string base64Credential = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIAL_B64");
+            string jsonCredential = Encoding.UTF8.GetString(Convert.FromBase64String(base64Credential));
 
-            // Create FirestoreDb instance
-            string projectId = configuration["Firestore:ProjectId"]; // "kopinang-460316"
-            _firestoreDb = FirestoreDb.Create(projectId);
+            // Buat credential dari string JSON
+            var credential = GoogleCredential.FromJson(jsonCredential);
+
+            // Ambil ProjectId dari config
+            string projectId = configuration["Firestore:ProjectId"];
+
+            // Inisialisasi FirestoreDb
+            var dbBuilder = new FirestoreDbBuilder
+            {
+                ProjectId = projectId,
+                Credential = credential
+            };
+            _firestoreDb = dbBuilder.Build();
         }
 
         public CollectionReference GetPromoCollection()
@@ -22,12 +34,11 @@ namespace kopinang_api.Services
             return _firestoreDb.Collection("promo");
         }
 
-        // Misalnya ambil semua promo
         public async Task<List<Dictionary<string, object>>> GetAllPromosAsync()
         {
             var promos = new List<Dictionary<string, object>>();
-
             QuerySnapshot snapshot = await _firestoreDb.Collection("promo").GetSnapshotAsync();
+
             foreach (DocumentSnapshot doc in snapshot.Documents)
             {
                 if (doc.Exists)
