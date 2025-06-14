@@ -48,8 +48,31 @@ builder.Services.AddControllers()
     });
 
 // PostgreSQL
+//builder.Services.AddDbContext<kopinang_api.Data.DBContext>(options =>
+//     options.UseNpgsql(builder.Configuration.GetConnectionString("DATABASE_URL")));
+
+// Parsing DATABASE_URL
+var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (string.IsNullOrEmpty(dbUrl))
+    throw new Exception("DATABASE_URL environment variable is not set!");
+
+var uri = new Uri(dbUrl);
+var userInfo = uri.UserInfo.Split(':');
+var connStr = new Npgsql.NpgsqlConnectionStringBuilder
+{
+    Host = uri.Host,
+    Port = uri.Port,
+    Username = userInfo[0],
+    Password = userInfo[1],
+    Database = uri.AbsolutePath.TrimStart('/'),
+    SslMode = Npgsql.SslMode.Prefer,
+    TrustServerCertificate = true
+}.ToString();
+
+// Gunakan koneksi ke PostgreSQL dari DATABASE_URL
 builder.Services.AddDbContext<kopinang_api.Data.DBContext>(options =>
-     options.UseNpgsql(builder.Configuration.GetConnectionString("DATABASE_URL")));
+    options.UseNpgsql(connStr));
+
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
