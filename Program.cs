@@ -10,11 +10,18 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Inisialisasi Firebase (ambil path dari appsettings.json)
-var firebaseCredentialPath = builder.Configuration["Firebase:CredentialPath"];
+var base64 = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIAL_B64");
+if (string.IsNullOrEmpty(base64))
+{
+    throw new Exception("FIREBASE_CREDENTIAL_B64 is not set in environment variables.");
+}
+
+var json = Encoding.UTF8.GetString(Convert.FromBase64String(base64));
 FirebaseApp.Create(new AppOptions
 {
-    Credential = GoogleCredential.FromFile(firebaseCredentialPath)
+    Credential = GoogleCredential.FromJson(json)
 });
+
 
 // Tambahkan JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
