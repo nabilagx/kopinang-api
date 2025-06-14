@@ -9,7 +9,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Inisialisasi Firebase (ambil path dari appsettings.json)
+// Inisialisasi Firebase
 var base64 = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIAL_B64");
 if (string.IsNullOrEmpty(base64))
 {
@@ -19,15 +19,11 @@ if (string.IsNullOrEmpty(base64))
 FirebaseApp.Create(new AppOptions
 {
     Credential = GoogleCredential.FromJson(
-        Encoding.UTF8.GetString(Convert.FromBase64String(
-            Environment.GetEnvironmentVariable("FIREBASE_CREDENTIAL_B64")
-        ))
+        Encoding.UTF8.GetString(Convert.FromBase64String(base64))
     )
 });
 
-
-
-// Tambahkan JWT Authentication
+// JWT Auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -44,25 +40,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Controller + JSON settings
+// Controller + JSON
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
     });
 
-// Database (PostgreSQL)
+// PostgreSQL
 builder.Services.AddDbContext<kopinang_api.Data.DBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Swagger (API Docs)
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Firestore Service (khusus promo)
+// Firestore
 builder.Services.AddSingleton<FirestoreService>();
 
-// ORS
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -73,25 +69,23 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Middleware
 app.UseCors("AllowAll");
 
-if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+// Aktifkan Swagger di semua environment (Dev & Production)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "kopinang-api v1");
-        c.RoutePrefix = "swagger";
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "kopinang-api v1");
+    c.RoutePrefix = "swagger";
+});
 
+// Redirect root ke Swagger
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
+// Middleware standar
 app.UseHttpsRedirection();
-
-
-app.UseAuthentication();  //  Diperlukan agar [Authorize] berfungsi
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
+
 app.Run();
