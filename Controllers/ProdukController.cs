@@ -1,5 +1,6 @@
 ﻿using kopinang_api.Data;
 using kopinang_api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace kopinang_api.Controllers
 {
+   
     [ApiController]
     [Route("api/[controller]")]
     public class ProdukController : ControllerBase

@@ -43,5 +43,8 @@ namespace kopinang_api.Models
         // Relasi dengan order_detail
         [InverseProperty("Order")]
         public List<OrderDetail> OrderDetails { get; set; }
+
+        public ICollection<Ulasan>? Ulasan { get; set; }
+
     }
 }

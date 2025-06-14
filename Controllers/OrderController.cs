@@ -1,11 +1,19 @@
 ﻿using kopinang_api.Data;
 using kopinang_api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+
+
 
 namespace kopinang_api.Controllers
 {
+
     [ApiController]
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
@@ -129,6 +137,73 @@ namespace kopinang_api.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { message = "Pesanan berhasil diverifikasi dan status diubah jadi Selesai" });
         }
+
+
+        [HttpPost("payment/qris")]
+        public async Task<IActionResult> CreateQrisTransaction([FromBody] MidtransQrisRequest request)
+        {
+            if (request.totalHarga <= 0)
+            {
+                return BadRequest(new { message = "TotalHarga must be greater than 0." });
+            }
+
+            var client = new HttpClient();
+            var serverKey = Environment.GetEnvironmentVariable("MIDTRANS_SERVER_KEY")
+                ?? "fallback-key-untuk-dev-opsional";
+
+            var base64Auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(serverKey + ":"));
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Auth);
+
+            var midtransRequest = new
+            {
+                payment_type = "qris",
+                transaction_details = new
+                {
+                    order_id = request.orderId,
+                    gross_amount = request.totalHarga
+                },
+                customer_details = new
+                {
+                    first_name = request.nama,
+                    email = request.email
+                }
+            };
+
+            var json = JsonConvert.SerializeObject(midtransRequest);
+            Console.WriteLine("Payload Midtrans: " + json);  // Logging
+
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync("https://api.sandbox.midtrans.com/v2/charge", content);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine("Response Midtrans: " + responseBody);  // Logging
+
+            return Content(responseBody, "application/json");
+        }
+
+
+        [HttpPost("{orderId}/verifikasi-midtrans")]
+        public async Task<IActionResult> VerifikasiMidtrans(string orderId)
+        {
+            if (!int.TryParse(orderId, out var id))
+                return BadRequest("Invalid Order ID");
+
+            var order = await _context.orders.FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null)
+                return NotFound();
+
+            order.Status = "Diproses"; // atau "Selesai" jika ingin langsung selesai
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Status pembayaran berhasil diverifikasi" });
+        }
+
+
+
+
+
 
 
 
