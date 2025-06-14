@@ -48,8 +48,14 @@ builder.Services.AddControllers()
     });
 
 // PostgreSQL
-builder.Services.AddDbContext<kopinang_api.Data.DBContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// builder.Services.AddDbContext<kopinang_api.Data.DBContext>(options =>
+//     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new Exception("DATABASE_URL environment variable is not set!");
+}
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
