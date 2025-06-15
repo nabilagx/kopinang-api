@@ -184,21 +184,39 @@ namespace kopinang_api.Controllers
 
 
         [HttpPost("{orderId}/verifikasi-midtrans")]
-        public async Task<IActionResult> VerifikasiMidtrans(string orderId)
-        {
-            if (!int.TryParse(orderId, out var id))
-                return BadRequest("Invalid Order ID");
+public async Task<IActionResult> VerifikasiMidtrans(string orderId)
+{
+    var client = new HttpClient();
+    var serverKey = Environment.GetEnvironmentVariable("MIDTRANS_SERVER_KEY")
+        ?? "fallback-key";  // atau ambil dari appsettings
 
-            var order = await _context.orders.FirstOrDefaultAsync(o => o.Id == id);
-            if (order == null)
-                return NotFound();
+    var base64Auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(serverKey + ":"));
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Auth);
 
-            order.Status = "Diproses"; // atau "Selesai" jika ingin langsung selesai
-            order.UpdatedAt = DateTime.UtcNow;
+    // Panggil endpoint status Midtrans
+    var response = await client.GetAsync($"https://api.sandbox.midtrans.com/v2/{orderId}/status");
+    var body = await response.Content.ReadAsStringAsync();
 
-            await _context.SaveChangesAsync();
-            return Ok(new { message = "Status pembayaran berhasil diverifikasi" });
-        }
+    dynamic result = JsonConvert.DeserializeObject(body);
+    string transactionStatus = result.transaction_status;
+
+    if (transactionStatus != "settlement")
+        return BadRequest(new { message = $"Status pembayaran: {transactionStatus}" });
+
+    // Jika sudah "settlement", update status order di DB
+    if (!int.TryParse(orderId, out var id))
+        return BadRequest("Invalid Order ID");
+
+    var order = await _context.orders.FirstOrDefaultAsync(o => o.Id == id);
+    if (order == null) return NotFound();
+
+    order.Status = "Diproses";
+    order.UpdatedAt = DateTime.UtcNow;
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Pembayaran berhasil diverifikasi dan status pesanan diperbarui" });
+}
+
 
 
 
