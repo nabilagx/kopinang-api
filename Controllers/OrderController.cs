@@ -1,4 +1,4 @@
-﻿using kopinang_api.Data;
+using kopinang_api.Data;
 using kopinang_api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,13 +50,6 @@ namespace kopinang_api.Controllers
 
             return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
         }
-        
-            _context.orders.Add(order);
-            await _context.SaveChangesAsync();
-        
-            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
-        }
-
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
@@ -191,46 +184,38 @@ namespace kopinang_api.Controllers
 
 
         [HttpPost("{orderId}/verifikasi-midtrans")]
-        public async Task<IActionResult> VerifikasiMidtrans(string orderId)
-        {
-            var client = new HttpClient();
-            var serverKey = Environment.GetEnvironmentVariable("MIDTRANS_SERVER_KEY")
-                ?? "fallback-key";  // atau ambil dari appsettings
-        
-            var base64Auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(serverKey + ":"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Auth);
-        
-            // Panggil endpoint status Midtrans
-            var response = await client.GetAsync($"https://api.sandbox.midtrans.com/v2/{orderId}/status");
-            var body = await response.Content.ReadAsStringAsync();
-        
-            dynamic result = JsonConvert.DeserializeObject(body);
-            string transactionStatus = result.transaction_status;
-        
-            if (transactionStatus != "settlement")
-                return BadRequest(new { message = $"Status pembayaran: {transactionStatus}" });
-        
-            // Jika sudah "settlement", update status order di DB
-            if (!int.TryParse(orderId, out var id))
-                return BadRequest("Invalid Order ID");
-        
-            var order = await _context.orders.FirstOrDefaultAsync(o => o.Id == id);
-            if (order == null) return NotFound();
-        
-            order.Status = "Diproses";
-            order.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-        
-            return Ok(new { message = "Pembayaran berhasil diverifikasi dan status pesanan diperbarui" });
-        }
+public async Task<IActionResult> VerifikasiMidtrans(string orderId)
+{
+    var client = new HttpClient();
+    var serverKey = Environment.GetEnvironmentVariable("MIDTRANS_SERVER_KEY")
+        ?? "fallback-key";  // atau ambil dari appsettings
 
+    var base64Auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(serverKey + ":"));
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Auth);
 
+    // Panggil endpoint status Midtrans
+    var response = await client.GetAsync($"https://api.sandbox.midtrans.com/v2/{orderId}/status");
+    var body = await response.Content.ReadAsStringAsync();
 
+    dynamic result = JsonConvert.DeserializeObject(body);
+    string transactionStatus = result.transaction_status;
 
+    if (transactionStatus != "settlement")
+        return BadRequest(new { message = $"Status pembayaran: {transactionStatus}" });
 
+    // Jika sudah "settlement", update status order di DB
+    if (!int.TryParse(orderId, out var id))
+        return BadRequest("Invalid Order ID");
 
+    var order = await _context.orders.FirstOrDefaultAsync(o => o.Id == id);
+    if (order == null) return NotFound();
 
+    order.Status = "Diproses";
+    order.UpdatedAt = DateTime.UtcNow;
+    await _context.SaveChangesAsync();
 
+    return Ok(new { message = "Pembayaran berhasil diverifikasi dan status pesanan diperbarui" });
+}
 
     }
 }
