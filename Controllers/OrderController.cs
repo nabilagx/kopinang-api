@@ -44,20 +44,12 @@ namespace kopinang_api.Controllers
             order.Status = "Diproses";
             order.CreatedAt = System.DateTime.UtcNow;
             order.UpdatedAt = System.DateTime.UtcNow;
-        
-            // Kurangi stok produk
-            foreach (var detail in order.OrderDetails)
-            {
-                var produk = await _context.produks.FirstOrDefaultAsync(p => p.Id == detail.ProdukId);
-                if (produk == null)
-                    return BadRequest(new { message = $"Produk dengan ID {detail.ProdukId} tidak ditemukan" });
-        
-                if (produk.Stok < detail.Qty)
-                    return BadRequest(new { message = $"Stok tidak cukup untuk produk {produk.Nama}" });
-        
-                produk.Stok -= detail.Qty;
-                _context.produks.Update(produk);
-            }
+
+            _context.orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+        }
         
             _context.orders.Add(order);
             await _context.SaveChangesAsync();
