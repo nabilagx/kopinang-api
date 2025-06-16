@@ -1,5 +1,3 @@
-Tentu, ini dia versi lengkap dan rapi dari `README.md` untuk repositori `kopinang-api` Anda, siap untuk langsung di-copy-paste ke GitHub:
-
 # ☕ KOPI NANG API
 
 **KOPI NANG** adalah *RESTful API* berbasis **ASP.NET Core** dan **PostgreSQL** yang dikembangkan oleh **Kelompok 5** dalam rangka penyelesaian tugas akhir mata kuliah **Pemrograman Antarmuka Aplikasi (PAA) - Kelas B** di **Universitas Jember**.
