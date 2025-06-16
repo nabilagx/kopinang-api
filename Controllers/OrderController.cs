@@ -13,7 +13,6 @@ using System.Net.Http.Headers;
 
 namespace kopinang_api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
