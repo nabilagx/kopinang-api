@@ -39,17 +39,6 @@ Proyek ini dideploy ke Railway dan dapat diakses melalui:
 
 🔗 [https://kopinang-api-production.up.railway.app](https://kopinang-api-production.up.railway.app)
 
-**Langkah Deploy:**
-
-1.  Push project ke GitHub.
-2.  Hubungkan repo ke Railway ([railway.app](https://railway.app/)).
-3.  Tambahkan *environment variable* berikut di Railway:
-      * `ConnectionStrings__DefaultConnection`
-      * `Jwt__Key`
-      * `Firebase__ProjectId`
-      * `Midtrans__ServerKey`
-4.  Railway akan otomatis membangun dan menjalankan proyek Anda.
-
 -----
 
 ## 👥 Anggota Kelompok 5
