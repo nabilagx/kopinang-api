@@ -33,51 +33,7 @@ API ini mendukung aplikasi mobile **KOPI NANG**, sebuah sistem pemesanan kopi be
 | Swagger UI        | Dokumentasi API                            |
 | Railway           | Deployment API ke cloud                    |
 
------
 
-## 🚀 Getting Started
-
-### 1\. Clone Repository
-
-```bash
-git clone https://github.com/nabilagx/kopinang-api.git
-cd kopinang-api
-```
-
-### 2\. Konfigurasi `appsettings.Development.json`
-
-Buat file `appsettings.Development.json` di root folder project Anda, lalu isi dengan konfigurasi berikut:
-
-```json
-{
-  "Jwt": {
-    "Key": "your_secret_key",
-    "Issuer": "KopiNangAPI"
-  },
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Database=kopinangdb;Username=postgres;Password=yourpassword"
-  },
-  "Firebase": {
-    "ProjectId": "your-firebase-project-id"
-  },
-  "Midtrans": {
-    "ServerKey": "your-midtrans-server-key"
-  }
-}
-```
-
-### 3\. Jalankan Migration dan API
-
-```bash
-dotnet ef database update
-dotnet run
-```
-
-Akses Swagger UI di:
-
-📄 `http://localhost:5000/swagger`
-
------
 
 ## ☁️ Deployment ke Railway
 
@@ -108,14 +64,7 @@ Proyek ini dideploy ke Railway dan dapat diakses melalui:
 
 -----
 
-## 📬 Kontak
-Tentu, saya akan perbarui bagian **Kontak** di `README.md` Anda agar lebih mengarah ke *link* GitHub aplikasi Flutter.
-
----
-
 🐙 **GitHub Aplikasi Mobile (Flutter):** [KOPI NANG Mobile App](https://github.com/nabilagx/aplikasi-kopi-nang.git)
-
----
 
 -----
 
@@ -124,5 +73,3 @@ Tentu, saya akan perbarui bagian **Kontak** di `README.md` Anda agar lebih menga
 — Tim KOPI NANG ☕
 
 -----
-
-Semoga ini membantu\! Jika Anda menginginkan versi bilingual (Indonesia + English) atau ada penyesuaian lain, jangan ragu untuk memberitahu saya.
