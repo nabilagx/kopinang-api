@@ -3,11 +3,13 @@ using kopinang_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using kopinang_api.Attributes;
 
 namespace kopinang_api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [FirebaseAuthorize]
     public class UlasanController : ControllerBase
     {
         private readonly DBContext _context;
