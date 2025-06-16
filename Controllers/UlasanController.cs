@@ -1,6 +1,7 @@
 ﻿using kopinang_api.Data;
 using kopinang_api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace kopinang_api.Controllers
