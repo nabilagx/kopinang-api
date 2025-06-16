@@ -23,23 +23,6 @@ FirebaseApp.Create(new AppOptions
     )
 });
 
-// JWT Auth
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
-
 // Controller + JSON
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
@@ -104,6 +87,35 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "kopinang-api v1");
     c.RoutePrefix = "swagger";
+});
+app.Use(async (context, next) =>
+{
+    var authHeader = context.Request.Headers["Authorization"].ToString();
+
+    if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+    {
+        var token = authHeader.Substring("Bearer ".Length).Trim();
+
+        try
+        {
+            var decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
+            context.Items["uid"] = decodedToken.Uid;
+        }
+        catch
+        {
+            context.Response.StatusCode = 401;
+            await context.Response.WriteAsync("Token Firebase tidak valid");
+            return;
+        }
+    }
+    else
+    {
+        context.Response.StatusCode = 401;
+        await context.Response.WriteAsync("Token Firebase tidak ditemukan");
+        return;
+    }
+
+    await next();
 });
 
 // Redirect root ke Swagger
