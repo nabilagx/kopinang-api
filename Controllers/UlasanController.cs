@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace kopinang_api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UlasanController : ControllerBase
