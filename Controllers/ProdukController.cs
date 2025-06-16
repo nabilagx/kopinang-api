@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kopinang_api.Attributes;
 
 namespace kopinang_api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [FirebaseAuthorize]
     public class ProdukController : ControllerBase
     {
         private readonly DBContext _context;
