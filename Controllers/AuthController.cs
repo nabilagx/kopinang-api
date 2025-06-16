@@ -19,9 +19,12 @@ public class AuthController : ControllerBase
 
         if (FirebaseApp.DefaultInstance == null)
         {
+            var firebaseB64 = _configuration["FIREBASE_CREDENTIAL_B64"];
+            var firebaseJson = Encoding.UTF8.GetString(Convert.FromBase64String(firebaseB64));
+            
             FirebaseApp.Create(new AppOptions()
             {
-                Credential = GoogleCredential.GetApplicationDefault() // atau gunakan file json dari Firebase service account
+                Credential = GoogleCredential.FromJson(firebaseJson)
             });
         }
     }
