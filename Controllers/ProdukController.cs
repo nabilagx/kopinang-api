@@ -21,11 +21,6 @@ namespace kopinang_api.Controllers
         }
 
 [AllowAnonymous]
-[HttpGet]
-public IActionResult GetProduk() {
-    ...
-}
-
         [HttpGet]
          public async Task<ActionResult<IEnumerable<Produk>>> GetProduk()
          {
