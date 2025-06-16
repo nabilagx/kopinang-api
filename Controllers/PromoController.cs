@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace kopinang_api.Controllers
 {
-  
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PromoController : ControllerBase
