@@ -11,11 +11,11 @@ API ini mendukung aplikasi mobile **KOPI NANG**, sebuah sistem pemesanan kopi be
   * 🔐 Autentikasi JWT berbasis **Firebase Auth**
   * 🛒 Manajemen Produk dan Kategori
   * 📦 Sistem Pemesanan (Order & DetailOrder)
-  * 🧾 Integrasi Pembayaran menggunakan **Midtrans** (QRIS, e-wallet)
-  * 🧑‍🍳 Dashboard Admin (scan QR, ubah status pesanan, lihat statistik)
+  * 🧾 Integrasi Pembayaran menggunakan **Midtrans** (QRIS)
+  * 🧑‍🍳 Dashboard Admin (scan QR, ubah status pesanan)
   * ⭐ Sistem Ulasan Produk dengan Rating & Review
   * 🎁 Sistem Promo: validasi penggunaan dan pengurangan kuota
-  * 📈 Statistik Penjualan Harian & Produk Terlaris
+  * 📱 Dan fitur lainnya
 
 -----
 
