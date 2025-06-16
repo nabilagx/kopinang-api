@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace kopinang_api.Controllers
 {
-   
+      [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ProdukController : ControllerBase
