@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using kopinang_api.Attributes;
 
 
 
@@ -15,6 +16,7 @@ namespace kopinang_api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [FirebaseAuthorize]
     public class OrderController : ControllerBase
     {
         private readonly DBContext _context;
