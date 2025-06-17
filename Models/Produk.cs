@@ -31,5 +31,10 @@ namespace kopinang_api.Models
         public DateTime? UpdatedAt { get; set; }
     }
 
+    public class KurangiStokDto
+    {
+        public int Jumlah { get; set; }
+    }
+
 
 }
