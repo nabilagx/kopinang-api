@@ -74,7 +74,30 @@ namespace kopinang_api.Controllers
             return Ok(new { message = "Produk berhasil diupdate" });
         }
 
-        // Delete Produk
+        [HttpPut("{id}/kurangi-stok")]
+        public async Task<IActionResult> KurangiStok(int id, [FromBody] KurangiStokDto dto)
+        {
+            var produk = await _context.produk.FindAsync(id);
+            if (produk == null)
+                return NotFound(new { message = "Produk tidak ditemukan." });
+
+            if (produk.Stok < dto.Jumlah)
+                return BadRequest(new { message = "Stok tidak mencukupi." });
+
+            produk.Stok -= dto.Jumlah;
+            produk.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Stok berhasil dikurangi.",
+                produk.Id,
+                produk.Nama,
+                produk.Stok
+            });
+        }
+        
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
