@@ -10,11 +10,10 @@ namespace kopinang_api.Data
         public DbSet<Produk> produk { get; set; }
         public DbSet<Order> orders { get; set; }
         public DbSet<OrderDetail> order_detail { get; set; }
-        public DbSet<Ulasan> ulasan { get; set; }  // Tambahan DbSet untuk ulasan
+        public DbSet<Ulasan> ulasan { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Optional: konfigurasi relasi & constraints
             modelBuilder.Entity<Order>()
                 .HasMany(o => o.OrderDetails)
                 .WithOne(od => od.Order)
@@ -25,14 +24,12 @@ namespace kopinang_api.Data
                 .WithMany()
                 .HasForeignKey(od => od.ProdukId);
 
-            // Konfigurasi relasi Ulasan ke Order
             modelBuilder.Entity<Ulasan>()
                 .HasOne(u => u.Order)
-                .WithMany(o => o.Ulasan)  // Jika di model Order ada ICollection<Ulasan> Ulasan
+                .WithMany(o => o.Ulasan) 
                 .HasForeignKey(u => u.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Unique constraint user_id + order_id sudah ada di DB, bisa juga di EF:
             modelBuilder.Entity<Ulasan>()
                 .HasIndex(u => new { u.OrderId, u.UserId })
                 .IsUnique();
