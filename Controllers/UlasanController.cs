@@ -18,17 +18,14 @@ namespace kopinang_api.Controllers
         {
             _context = context;
         }
-
-        // POST: api/ulasan
+        
         [HttpPost]
         public async Task<IActionResult> CreateUlasan([FromBody] Ulasan ulasan)
         {
-            // Ambil userId langsung dari body
             var userId = ulasan.UserId;
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("UserId harus diisi.");
-
-            // Cek order ada dan statusnya "Selesai"
+                
             var order = await _context.orders
                 .Where(o => o.Id == ulasan.OrderId && o.UserId == userId && o.Status == "Selesai")
                 .FirstOrDefaultAsync();
@@ -36,7 +33,6 @@ namespace kopinang_api.Controllers
             if (order == null)
                 return BadRequest("Order tidak ditemukan atau belum selesai.");
 
-            // Pastikan user tidak sudah bikin ulasan untuk order ini
             bool alreadyReviewed = await _context.ulasan
                 .AnyAsync(u => u.OrderId == ulasan.OrderId && u.UserId == userId);
 
@@ -52,7 +48,6 @@ namespace kopinang_api.Controllers
             return CreatedAtAction(nameof(GetUlasanById), new { id = ulasan.Id }, ulasan);
         }
 
-        // GET: api/ulasan/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUlasanById(int id)
         {
@@ -63,7 +58,6 @@ namespace kopinang_api.Controllers
             return Ok(ulasan);
         }
 
-        // GET: api/ulasan/order/{orderId}
         [HttpGet("order/{orderId}")]
         public async Task<IActionResult> GetUlasanByOrder(int orderId)
         {
@@ -74,7 +68,6 @@ namespace kopinang_api.Controllers
             return Ok(ulasan);
         }
 
-        // GET: api/ulasan/user/{userId}
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUlasanByUser(string userId)
         {
@@ -122,10 +115,5 @@ namespace kopinang_api.Controllers
             var ulasanList = await _context.ulasan.ToListAsync();
             return Ok(ulasanList);
         }
-
-
-
-        // NO DELETE - karena ulasan tidak bisa dihapus
-        // NO UPDATE - untuk menjaga integritas ulasan
     }
 }
