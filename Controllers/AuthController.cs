@@ -38,7 +38,7 @@ public class AuthController : ControllerBase
             string uid = decodedToken.Uid;
             string email = decodedToken.Claims["email"].ToString();
 
-            // Generate JWT lokal kita sendiri
+            // Generate JWT
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, uid),
