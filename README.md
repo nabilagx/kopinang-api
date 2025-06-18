@@ -27,7 +27,7 @@ API ini mendukung aplikasi mobile **KOPI NANG**, sebuah sistem pemesanan kopi be
 | Entity Framework  | ORM untuk koneksi ke PostgreSQL            |
 | PostgreSQL        | Database relasional                        |
 | Firebase Auth     | Autentikasi JWT                            |
-| Midtrans API      | Integrasi pembayaran (QRIS & E-Wallet)    |
+| Midtrans API      | Integrasi pembayaran (QRIS)                |
 | Swagger UI        | Dokumentasi API                            |
 | Railway           | Deployment API ke cloud                    |
 
